@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">AcademiaApp</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Mis Opciones</string>
+    <string name="title_activity_http">HttpActivity</string>
+    <string name="title_activity_contactos">ContactosActivity</string>
+    <string name="title_activity_contacto_detalle">ContactoDetalleActivity</string>
+    <string name="title_activity_open_gl">OpenGlActivity</string>
+</resources>
