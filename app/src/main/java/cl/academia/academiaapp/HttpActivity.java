@@ -99,10 +99,6 @@ public class HttpActivity extends AppCompatActivity {
         //ASOCIAMOS EL LIST VIEW AL ADAPTADOR
         listaUsuarios.setAdapter(adapter);
 
-
-        System.out.println("position = ");
-
-
     }
 
 }
