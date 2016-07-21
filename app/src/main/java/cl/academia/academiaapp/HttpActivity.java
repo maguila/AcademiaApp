@@ -155,6 +155,8 @@ public class HttpActivity extends AppCompatActivity {
             DataBaseHelper dbHelper = new DataBaseHelper(this, false);
             dbHelper.deleteAllUsuarios();
 
+            initListViewDesdeJson();
+
             try{
                 for(int i = 0; i<jsonArray.length(); i++){
                     JSONObject o    = jsonArray.getJSONObject(i);
