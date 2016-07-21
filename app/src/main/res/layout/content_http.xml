@@ -12,8 +12,19 @@
     tools:context="cl.academia.academiaapp.HttpActivity"
     tools:showIn="@layout/activity_http">
 
+    <Button android:id="@+id/leer_usuarios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Leer desde SQLite"
+        android:onClick="leerBD"/>
+
+
+
     <ListView android:id="@+id/lista_usuarios"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/leer_usuarios"></ListView>
+
+
 
 </RelativeLayout>

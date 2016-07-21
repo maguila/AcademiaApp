@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -25,6 +26,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
+import cl.academia.academiaapp.sqlLite.DataBaseHelper;
+import cl.academia.academiaapp.sqlLite.UsuarioPojo;
 
 public class HttpActivity extends AppCompatActivity {
 
@@ -91,6 +95,9 @@ public class HttpActivity extends AppCompatActivity {
                 String nombre   = o.getString("nombre");
                 String apellido = o.getString("apellido");
                 adapter.add(nombre + " " + apellido );
+
+                //insertDB(nombre, apellido);
+
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -99,6 +106,22 @@ public class HttpActivity extends AppCompatActivity {
         //ASOCIAMOS EL LIST VIEW AL ADAPTADOR
         listaUsuarios.setAdapter(adapter);
 
+    }
+
+
+
+    public void insertDB(String nombre, String apellido){
+        DataBaseHelper dbHelper = new DataBaseHelper(this);
+        Log.d("INSERT ... ", "Insetando en base de datos el usuario " + nombre);
+
+        dbHelper.addUsuario(new UsuarioPojo(null, nombre, apellido));
+    }
+
+    public void leerBD(View view){
+        DataBaseHelper dbHelper = new DataBaseHelper(this);
+        for(UsuarioPojo o : dbHelper.getAllUsuarios()){
+            System.out.println(o.getNombre());
+        }
     }
 
 }
