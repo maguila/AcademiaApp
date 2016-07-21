@@ -8,24 +8,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 import cl.academia.academiaapp.sqlLite.DataBaseHelper;
 import cl.academia.academiaapp.sqlLite.UsuarioPojo;
@@ -50,6 +42,7 @@ public class HttpActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
 
         //INSTANCIAMOS NUESTRO LIST VIEW
@@ -95,9 +88,6 @@ public class HttpActivity extends AppCompatActivity {
                 String nombre   = o.getString("nombre");
                 String apellido = o.getString("apellido");
                 adapter.add(nombre + " " + apellido );
-
-                //insertDB(nombre, apellido);
-
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -112,7 +102,7 @@ public class HttpActivity extends AppCompatActivity {
 
     public void insertDB(String nombre, String apellido){
         DataBaseHelper dbHelper = new DataBaseHelper(this);
-        Log.d("INSERT ... ", "Insetando en base de datos el usuario " + nombre);
+        Log.d("INSERT ... ", "insertando en base de datos el usuario " + nombre);
 
         dbHelper.addUsuario(new UsuarioPojo(null, nombre, apellido));
     }
@@ -122,6 +112,23 @@ public class HttpActivity extends AppCompatActivity {
         for(UsuarioPojo o : dbHelper.getAllUsuarios()){
             System.out.println(o.getNombre());
         }
+    }
+
+
+    public void sincronizar(View view){
+        DataBaseHelper dbHelper = new DataBaseHelper(this);
+
+        try{
+            for(int i = 0; i<jsonArray.length(); i++){
+                JSONObject o    = jsonArray.getJSONObject(i);
+                String nombre   = o.getString("nombre");
+                String apellido = o.getString("apellido");
+                insertDB(nombre, apellido);
+            }
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+
     }
 
 }

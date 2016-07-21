@@ -12,18 +12,27 @@
     tools:context="cl.academia.academiaapp.HttpActivity"
     tools:showIn="@layout/activity_http">
 
-    <Button android:id="@+id/leer_usuarios"
+
+    <Button android:id="@+id/leer_usuarios_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Leer desde SQLite"
         android:onClick="leerBD"/>
 
-
+    <Button android:id="@+id/sincronizar_sqlite_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sincronizar ..."
+        android:onClick="sincronizar"
+        android:layout_below="@id/leer_usuarios_button"/>
 
     <ListView android:id="@+id/lista_usuarios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/leer_usuarios"></ListView>
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/sincronizar_sqlite_button"></ListView>
+
 
 
 

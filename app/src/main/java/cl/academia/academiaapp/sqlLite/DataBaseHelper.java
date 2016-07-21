@@ -15,7 +15,7 @@ import java.util.List;
 public class DataBaseHelper extends SQLiteOpenHelper{
 
     private static final String DATABASE_NAME = "pruebaDB";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
 
     private static final String KEY_NOMBRE_TABLA = "TABLA_USUARIOS";
@@ -31,6 +31,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -51,11 +56,17 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + KEY_NOMBRE_TABLA);
+        onCreate(db);
     }
+
 
 
     public void addUsuario(UsuarioPojo usuarioPojo){
         SQLiteDatabase db = this.getWritableDatabase();
+
+        if(db==null)
+            onCreate(db);
+
         ContentValues values = new ContentValues();
         values.put(KEY_NOMBRE, usuarioPojo.getNombre());
         values.put(KEY_USUARIO, usuarioPojo.getUsuario());
@@ -67,6 +78,9 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     public UsuarioPojo getUsuario(String usuario){
         SQLiteDatabase db = this.getReadableDatabase();
+
+        if(db==null)
+            onCreate(db);
 
         Cursor cursor = db.query(KEY_NOMBRE_TABLA, new String[]{KEY_ID, KEY_USUARIO, KEY_NOMBRE, KEY_APELLIDO},
                                  KEY_NOMBRE + "=?",
@@ -90,6 +104,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         String sql = "SELECT * FROM " + KEY_NOMBRE_TABLA;
 
         SQLiteDatabase db = this.getWritableDatabase();
+
+        if(db==null){
+            onCreate(db);
+            db = this.getWritableDatabase();
+        }
+
+
         Cursor cursor = db.rawQuery(sql, null);
 
         if(cursor!=null && cursor.moveToFirst()){
