@@ -26,12 +26,27 @@
         android:onClick="sincronizar"
         android:layout_below="@id/leer_usuarios_button"/>
 
+    <Button android:id="@+id/crear_nuevo_usuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Crear Nuevo Usuario"
+        android:onClick="crearUsuario"
+        android:layout_below="@id/sincronizar_sqlite_button"/>
+
+
+    <TextView android:id="@+id/cantidad_usuarios_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/crear_nuevo_usuario"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
     <ListView android:id="@+id/lista_usuarios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/sincronizar_sqlite_button"></ListView>
+        android:layout_below="@id/cantidad_usuarios_text"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"></ListView>
 
 
 
