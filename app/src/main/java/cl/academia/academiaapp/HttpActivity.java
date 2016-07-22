@@ -242,7 +242,7 @@ public class HttpActivity extends AppCompatActivity {
                 sb.append(line).append(" \n");
             }
 
-            System.out.println("SALIDA .. " + sb.toString());
+            System.out.println("SALIDA .... " + sb.toString());
 
         }catch(IOException e){
             e.printStackTrace();
