@@ -251,8 +251,10 @@ public class HttpActivity extends AppCompatActivity {
     }
 
 
-
-
+    /**
+     * METODO PARA SABER SI LA CONEXION ESTA ACTIVA
+     * @return
+     */
     private boolean isConexionActiva() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
