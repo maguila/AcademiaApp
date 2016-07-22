@@ -69,7 +69,7 @@ public class HttpActivity extends AppCompatActivity {
 
             DataBaseHelper dbHelper = new DataBaseHelper(this, false);
             for(UsuarioPojo o : dbHelper.getAllUsuarios()){
-                Log.d("LECTURA DE SQLite ... ", "NOMBRE : " + o.getNombre() + ",  APELLIDO : " + o.getApellido());
+                Log.d("LECTURA DE SQLite ... ", "NOMBRE  : " + o.getNombre() + ",  APELLIDO : " + o.getApellido());
                 adapter.add(o.getNombre() + " " + o.getApellido() );
             }
 
