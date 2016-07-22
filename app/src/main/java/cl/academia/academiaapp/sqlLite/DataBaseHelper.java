@@ -139,4 +139,5 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.execSQL("DELETE FROM " + KEY_NOMBRE_TABLA);
         db.close();
     }
+
 }
