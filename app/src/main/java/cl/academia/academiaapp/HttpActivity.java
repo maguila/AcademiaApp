@@ -1,11 +1,14 @@
 package cl.academia.academiaapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,14 +42,26 @@ import cl.academia.academiaapp.sqlLite.UsuarioPojo;
 public class HttpActivity extends AppCompatActivity {
 
     private JSONArray jsonArray;
+    private ProgressDialog loadingdialog;
+    private Context contextActivity;
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            loadingdialog.dismiss();
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_http);
+
+        this.contextActivity = this;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,10 +97,31 @@ public class HttpActivity extends AppCompatActivity {
 
     }
 
+    /***************************************
+     * Carga datos al listView leyendo un json
+     ***************************************/
     public void initListViewDesdeJson(){
+
+        loadingdialog = ProgressDialog.show(HttpActivity.this, "" , "Sincronizando, favor espere", true);
+
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                handler.sendEmptyMessage(0);
+
+            }
+        }.start();
+
+
+
         //INSTANCIAMOS NUESTRO LIST VIEW
         ListView listaUsuarios = (ListView) findViewById(R.id.lista_usuarios);
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        ArrayAdapter<String> adapter = new ArrayAdapter(contextActivity, android.R.layout.simple_list_item_1);
 
 
         //Google creo esto para informar de violaciones de politicas relacionadas con los hijos en ejecucion (Thread) y la maquina virtual (Dalvik)
@@ -113,12 +149,12 @@ public class HttpActivity extends AppCompatActivity {
                 sb.append(line).append(" \n");
             }
 
-            String jsonString = sb.toString().trim(); //Quitamos los espacion en blanco
+            String jsonString = sb.toString().trim(); //Quitamos los espacios en blanco
 
             System.out.println(jsonString);
 
-            JSONObject jsonObj = new JSONObject(sb.toString().trim()); //AHORA INSTANCIAMOS LA CLASE JSON OBJECT
-            this.jsonArray = jsonObj.getJSONArray("usuarios"); // OBTENER EL ARREGLO JSON
+            JSONObject jsonObj = new JSONObject(jsonString); //AHORA INSTANCIAMOS LA CLASE JSON OBJECT
+            jsonArray = jsonObj.getJSONArray("usuarios"); // OBTENER EL ARREGLO JSON
 
             //RECORRERMOS EL JSON ARRAY
             for(int i = 0; i<jsonArray.length(); i++){
@@ -133,6 +169,8 @@ public class HttpActivity extends AppCompatActivity {
 
         //ASOCIAMOS EL LIST VIEW AL ADAPTADOR
         listaUsuarios.setAdapter(adapter);
+
+
     }
 
 
@@ -152,17 +190,18 @@ public class HttpActivity extends AppCompatActivity {
 
         if(isConexionActiva()){
 
-            DataBaseHelper dbHelper = new DataBaseHelper(this, false);
+            DataBaseHelper dbHelper = new DataBaseHelper(contextActivity, false);
             dbHelper.deleteAllUsuarios();
 
             initListViewDesdeJson();
+
 
             try{
                 for(int i = 0; i<jsonArray.length(); i++){
                     JSONObject o    = jsonArray.getJSONObject(i);
                     String nombre   = o.getString("nombre");
                     String apellido = o.getString("apellido");
-                    insertDB(nombre, apellido);
+                    dbHelper.addUsuario(new UsuarioPojo(null, nombre, apellido));
                 }
             }catch(JSONException e){
                 e.printStackTrace();
@@ -172,16 +211,12 @@ public class HttpActivity extends AppCompatActivity {
             TextView text = (TextView) findViewById(R.id.cantidad_usuarios_text);
             text.setText(dbHelper.countUsuarios()+"");
         }else{
-            Toast.makeText(this, "No hay conexion, no es posible sincronizar datos ...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(contextActivity, "No hay conexion, no es posible sincronizar datos ...", Toast.LENGTH_SHORT).show();
         }
 
 
-    }
 
-    public void insertDB(String nombre, String apellido){
-        DataBaseHelper dbHelper = new DataBaseHelper(this, false);
-        Log.d("INSERT ... ", "insertando en base de datos el usuario " + nombre);
-        dbHelper.addUsuario(new UsuarioPojo(null, nombre, apellido));
+
     }
 
     public void crearUsuario(View view){

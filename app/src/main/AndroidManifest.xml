@@ -61,6 +61,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cl.academia.academiaapp.MainActivity" />
         </activity>
+
+        <service
+            android:name=".service.MyServicePrueba"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity android:name=".ServiceActivity"></activity>
     </application>
 
 </manifest>
