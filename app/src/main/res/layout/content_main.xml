@@ -15,5 +15,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="La mansa App!!" />
+        android:text="La mansa App!!"
+        android:id="@+id/textView2" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enviar Notificacion"
+        android:id="@+id/button3"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="104dp"
+        android:background="@drawable/shape01"
+        android:textColor="#FFFFFF"
+        android:onClick="enviarAviso"/>
+
+
 </RelativeLayout>

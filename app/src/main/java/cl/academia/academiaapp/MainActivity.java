@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import cl.academia.academiaapp.service.MyServicePrueba;
+import cl.academia.academiaapp.util.AndroidUtils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -107,5 +108,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void enviarAviso(View view){
+        AndroidUtils.enviarNotificacion(this, "MENSAJEEEE", R.drawable.ic_menu_camera, ServiceActivity.class);
     }
 }
