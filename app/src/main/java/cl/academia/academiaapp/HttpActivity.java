@@ -1,15 +1,8 @@
 package cl.academia.academiaapp;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -23,35 +16,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 import cl.academia.academiaapp.sqlLite.DataBaseHelper;
 import cl.academia.academiaapp.sqlLite.UsuarioPojo;
+import cl.academia.academiaapp.util.AndroidUtils;
 
 public class HttpActivity extends AppCompatActivity {
 
     private JSONArray jsonArray;
-    private ProgressDialog loadingdialog;
     private Context contextActivity;
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            loadingdialog.dismiss();
-            super.handleMessage(msg);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +48,12 @@ public class HttpActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+
+
         //CREO EL LIST VIEW Y AGREGO VALORES AL ADAPTADOR DESDE UN JSON REMOTO
-        if(isConexionActiva())
+        if(AndroidUtils.isConexionActiva(this)){
             initListViewDesdeJson();
-        else{
+        }else{
             Toast.makeText(this, "No hay conexion, se debe traer datos de la base de datos ...", Toast.LENGTH_SHORT).show();
 
             ListView listaUsuarios = (ListView) findViewById(R.id.lista_usuarios);
@@ -102,57 +79,13 @@ public class HttpActivity extends AppCompatActivity {
      ***************************************/
     public void initListViewDesdeJson(){
 
-        loadingdialog = ProgressDialog.show(HttpActivity.this, "" , "Sincronizando, favor espere", true);
-
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                handler.sendEmptyMessage(0);
-
-            }
-        }.start();
-
-
-
         //INSTANCIAMOS NUESTRO LIST VIEW
         ListView listaUsuarios = (ListView) findViewById(R.id.lista_usuarios);
         ArrayAdapter<String> adapter = new ArrayAdapter(contextActivity, android.R.layout.simple_list_item_1);
 
 
-        //Google creo esto para informar de violaciones de politicas relacionadas con los hijos en ejecucion (Thread) y la maquina virtual (Dalvik)
-        //Con esto se crea un alerta al violar dicha politica, se crea una traza de la pila de ejecucion (Stack Trace)
-        //Siempre cuando accedemos a la red, debemos agregar estas dos lineas ...
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        //LLAMAMOS UN JSON DESDE UN URL
-        String url = "http://server2.solcloud.cl/academia/retorno.json";
-        HttpURLConnection conn = null;
         try{
-            conn = (HttpURLConnection) (new URL(url)).openConnection();
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.connect();
-            InputStream is = conn.getInputStream();
-
-            BufferedReader buff = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line = "-";
-
-            while( (line = buff.readLine()) !=null ){
-                sb.append(line).append(" \n");
-            }
-
-            String jsonString = sb.toString().trim(); //Quitamos los espacios en blanco
-
-            System.out.println(jsonString);
-
+            String jsonString = AndroidUtils.getDataStringByURL("http://server2.solcloud.cl/academia/retorno.json");
             JSONObject jsonObj = new JSONObject(jsonString); //AHORA INSTANCIAMOS LA CLASE JSON OBJECT
             jsonArray = jsonObj.getJSONArray("usuarios"); // OBTENER EL ARREGLO JSON
 
@@ -163,7 +96,7 @@ public class HttpActivity extends AppCompatActivity {
                 String apellido = o.getString("apellido");
                 adapter.add(nombre + " " + apellido );
             }
-        }catch(Exception e){
+        }catch (JSONException e){
             e.printStackTrace();
         }
 
@@ -174,7 +107,10 @@ public class HttpActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * Accion para leer datos desde SQLite
+     * @param view
+     */
     public void leerBD(View view){
         DataBaseHelper dbHelper = new DataBaseHelper(this, false);
         for(UsuarioPojo o : dbHelper.getAllUsuarios()){
@@ -186,9 +122,13 @@ public class HttpActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Accion para sincronizar datos
+     * @param view
+     */
     public void sincronizar(View view){
 
-        if(isConexionActiva()){
+        if(AndroidUtils.isConexionActiva(this)){
 
             DataBaseHelper dbHelper = new DataBaseHelper(contextActivity, false);
             dbHelper.deleteAllUsuarios();
@@ -235,7 +175,15 @@ public class HttpActivity extends AppCompatActivity {
                 EditText editNombre = (EditText) viewRemoto.findViewById(R.id.editText);
                 EditText editApellido = (EditText) viewRemoto.findViewById(R.id.editText2);
 
-                postRequestURL("http://server2.solcloud.cl/academia/json.php", editNombre.getText().toString(), editApellido.getText().toString());
+
+                String url = "http://server2.solcloud.cl/academia/json.php";
+                String nombre   = editNombre.getText().toString();
+                String apellido = editApellido.getText().toString();
+
+                String parametrosURL = "?accion=crear&nombre="+nombre+"&apellido="+apellido;
+                String retorno = AndroidUtils.getDataStringByURL(url+parametrosURL);
+
+                System.out.println("RETORNO = " + retorno);
 
             }
         });
@@ -249,51 +197,41 @@ public class HttpActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void postRequestURL(String url, String nombre, String apellido){
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("accion", "crear");
-        params.put("nombre", nombre);
-        params.put("apellido", apellido);
 
 
-        String parametrosURL = "?accion=crear&nombre="+nombre+"&apellido="+apellido;
+    /* ESTE ES EL PHP QUE ACTUALIZA Y RETORNA UN JSON
 
 
-        HttpURLConnection conn = null;
-        try{
-            conn = (HttpURLConnection) (new URL(url+parametrosURL)).openConnection();
+        <?php
 
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.connect();
-            InputStream is = conn.getInputStream();
+          $accion   = $_GET['accion'];
+          $nombre   = $_GET['nombre'];
+          $apellido = $_GET['apellido'];
 
-            BufferedReader buff = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line = "-";
-
-            while( (line = buff.readLine()) !=null ){
-                sb.append(line).append(" \n");
-            }
-
-            System.out.println("SALIDA .... " + sb.toString());
-
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-
-    }
+          ini_set('display_errors', 1);
+          ini_set('display_startup_errors', 1);
+          error_reporting(E_ALL);
 
 
-    /**
-     * METODO PARA SABER SI LA CONEXION ESTA ACTIVA
-     * @return
+
+          if($accion == "crear"){
+            header('Content-Type: application/json');
+            $data = file_get_contents("retorno.json");
+            $tempArray = json_decode($data);
+            $tempArray->usuarios[] = array("nombre"=> $nombre, "apellido"=> $apellido);
+            $jsonData = json_encode($tempArray);
+            file_put_contents("retorno.json", $jsonData);
+            //print_r($tempArray);
+            echo "guardado ok ...";
+          }
+
+
+        ?>
+
+
+
+
      */
-    private boolean isConexionActiva() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
+
 
 }
