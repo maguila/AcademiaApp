@@ -67,7 +67,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ServiceActivity" />
+        <activity android:name=".ServiceActivity" android:screenOrientation="portrait"/>
         <activity
             android:name=".GameLoopActivity"
             android:label="@string/title_activity_game_loop"

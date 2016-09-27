@@ -9,6 +9,11 @@ import android.view.WindowManager;
 import cl.academia.academiaapp.game.Constants;
 import cl.academia.academiaapp.game.GamePanel;
 
+/**
+ * Paginas Utiles
+ * https://www.youtube.com/watch?v=l8-1ZtxA29Y
+ * http://opengameart.org/
+ */
 public class GameLoopActivity extends AppCompatActivity {
 
     @Override

@@ -1,6 +1,8 @@
 package cl.academia.academiaapp.game;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.util.ArrayList;
 
@@ -18,6 +20,9 @@ public class ObstacleManager {
     private int color;
 
     private long startTime;
+    private long initTime;
+
+    private int score = 0;
 
 
     public ObstacleManager(int playerGap, int obstacleGap, int obstacleHeight, int color){
@@ -26,9 +31,17 @@ public class ObstacleManager {
         this.obstacleHeight = obstacleHeight;
         this.color = color;
 
-        this.startTime = System.currentTimeMillis();
+        this.startTime = initTime = System.currentTimeMillis();
         obstacles = new ArrayList<>();
         populateObstacles();
+    }
+
+    public boolean playerCollide(RectPlayer player){
+        for(Obstacle ob : obstacles){
+            if(ob.playerCollide(player))
+                return true;
+        }
+        return false;
     }
 
     public void populateObstacles(){
@@ -42,9 +55,14 @@ public class ObstacleManager {
     }
 
     public void update(){
+
+        if(startTime < Constants.INIT_TIME)
+            startTime = Constants.INIT_TIME;
+
+
         int elapsedTime =  (int)(System.currentTimeMillis() - startTime);
         startTime = System.currentTimeMillis();
-        float speed = Constants.SCREEN_HEIGHT/10000.0f; //Cada 10 segundos
+        float speed = (float)(Math.sqrt(1 + (startTime- initTime)/2000.0)) * Constants.SCREEN_HEIGHT/(10000.0f); //VELOCIDAD QUE ACELERAN LOS OBSTACULOS
         for(Obstacle ob : obstacles){
             ob.incrementY(speed * elapsedTime);
         }
@@ -53,6 +71,7 @@ public class ObstacleManager {
             int xStart = (int)(Math.random() * (Constants.SCREEN_WIDTH - playerGap));
             obstacles.add(0, new Obstacle(obstacleHeight, color, xStart, obstacles.get(0).getRectangle().top - obstacleHeight - obstacleGap , playerGap ));
             obstacles.remove(obstacles.size() -1);
+            score++;
         }
     }
 
@@ -60,5 +79,9 @@ public class ObstacleManager {
         for(Obstacle ob : obstacles){
             ob.draw(canvas);
         }
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);
+        paint.setTextSize(50);
+        canvas.drawText("PUNTAJE: " + score, 50, 70, paint);
     }
 }
