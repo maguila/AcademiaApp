@@ -27,7 +27,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
 
 
-    public DataBaseHelper(Context context, boolean isSincronizar){
+    public DataBaseHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -50,7 +50,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         db.execSQL(sqlCreateTable.toString());
 
         //ACA EN ADELANTE DEBERIA IR LA SINCRONIZACION DE DATOS CON UNA BASE DE DATOS REMOTA...
-        //EN CASO DE HABER CONEXION DE INTERNET
+        //Y EN CASO DE HABER CONEXION DE INTERNET
     }
 
     @Override
@@ -138,6 +138,14 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + KEY_NOMBRE_TABLA);
         db.close();
+    }
+
+    public Cursor getAllUsuariosCursor(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String [] columnas = {KEY_NOMBRE, KEY_APELLIDO};
+
+        Cursor c = db.query(KEY_NOMBRE_TABLA, columnas, null, null, null, null, null, null);
+        return c;
     }
 
 }

@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -59,7 +60,7 @@ public class HttpActivity extends AppCompatActivity {
             ListView listaUsuarios = (ListView) findViewById(R.id.lista_usuarios);
             ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
 
-            DataBaseHelper dbHelper = new DataBaseHelper(this, false);
+            DataBaseHelper dbHelper = new DataBaseHelper(this);
             for(UsuarioPojo o : dbHelper.getAllUsuarios()){
                 Log.d("LECTURA DE SQLite .... ", "NOMBRE  : " + o.getNombre() + ",  APELLIDO : " + o.getApellido());
                 adapter.add(o.getNombre() + " " + o.getApellido() );
@@ -68,6 +69,13 @@ public class HttpActivity extends AppCompatActivity {
             TextView text = (TextView) findViewById(R.id.cantidad_usuarios_text);
             text.setText(dbHelper.countUsuarios()+"");
             listaUsuarios.setAdapter(adapter);
+
+            listaUsuarios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+            });
 
         }
 
@@ -112,7 +120,7 @@ public class HttpActivity extends AppCompatActivity {
      * @param view
      */
     public void leerBD(View view){
-        DataBaseHelper dbHelper = new DataBaseHelper(this, false);
+        DataBaseHelper dbHelper = new DataBaseHelper(this);
         for(UsuarioPojo o : dbHelper.getAllUsuarios()){
             Log.d("LECTURA DE SQLite ... ", "NOMBRE : " + o.getNombre() + ",  APELLIDO : " + o.getApellido());
         }
@@ -130,7 +138,7 @@ public class HttpActivity extends AppCompatActivity {
 
         if(AndroidUtils.isConexionActiva(this)){
 
-            DataBaseHelper dbHelper = new DataBaseHelper(contextActivity, false);
+            DataBaseHelper dbHelper = new DataBaseHelper(contextActivity);
             dbHelper.deleteAllUsuarios();
 
             initListViewDesdeJson();

@@ -1,6 +1,7 @@
 package cl.academia.academiaapp;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import cl.academia.academiaapp.service.MyServicePrueba;
+import cl.academia.academiaapp.sqlLite.DataBaseHelper;
 import cl.academia.academiaapp.util.AndroidUtils;
 
 public class MainActivity extends AppCompatActivity
@@ -44,6 +46,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        //DataBaseHelper helper = new DataBaseHelper(this);
+        //Cursor c = helper.getAllUsuariosCursor();
+
 
     }
 
@@ -79,6 +86,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -101,8 +109,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
             Intent intent = new Intent(this, ServiceActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_game_demo) {
+            Intent intent = new Intent(this, GameLoopActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -9,4 +9,5 @@
     <string name="title_activity_contactos">ContactosActivity</string>
     <string name="title_activity_contacto_detalle">ContactoDetalleActivity</string>
     <string name="title_activity_open_gl">OpenGlActivity</string>
+    <string name="title_activity_game_loop">GameLoopActivity</string>
 </resources>

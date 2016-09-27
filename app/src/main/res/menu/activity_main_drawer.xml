@@ -10,6 +10,12 @@
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Open GL" />
+
+        <item
+            android:id="@+id/nav_game_demo"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Game Demo" />
+
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"

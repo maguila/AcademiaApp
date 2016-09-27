@@ -67,7 +67,11 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ServiceActivity"></activity>
+        <activity android:name=".ServiceActivity" />
+        <activity
+            android:name=".GameLoopActivity"
+            android:label="@string/title_activity_game_loop"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
